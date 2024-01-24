@@ -8,13 +8,13 @@
 
 stdenv.mkDerivation rec {
   pname = "crawl${lib.optionalString tileMode "-tiles"}";
-  version = "0.29.0";
+  version = "0.31.0";
 
   src = fetchFromGitHub {
     owner = "crawl";
     repo = "crawl";
     rev = version;
-    sha256 = "sha256-SM8dSDV+88QGMqoFkITop1PHh9EakdgiV4tkXCw9pjM=";
+    sha256 = "sha256-06tVEduk3Y2VDsoOuI4nGjN8p+wGZT7wEU80nBSg+UU=";
   };
 
   # Patch hard-coded paths and remove force library builds
@@ -51,11 +51,12 @@ stdenv.mkDerivation rec {
               ] ++ lib.optional tileMode "TILES=y"
                 ++ lib.optional enableSound "SOUND=y";
 
+  suffix = if tileMode then "_tiles" else "_console";
   postInstall = ''
     ${lib.optionalString tileMode "mv $out/bin/crawl $out/bin/crawl-tiles"}
-    sed -i 's#/usr/games/##' debian/crawl${lib.optionalString tileMode "-tiles"}.desktop
-    install -m 444 -D debian/crawl${lib.optionalString tileMode "-tiles"}.desktop \
-      $out/share/applications/crawl${lib.optionalString tileMode "-tiles"}.desktop
+    sed -i 's#/usr/games/##' xdg-data/org.develz.Crawl${suffix}.desktop
+    install -m 444 -D xdg-data/org.develz.Crawl${suffix}.desktop \
+      $out/share/applications/crawl${suffix}.desktop
     install -m 444 -D dat/tiles/stone_soup_icon-512x512.png $out/share/icons/hicolor/512x512/apps/crawl.png
   '';
 
